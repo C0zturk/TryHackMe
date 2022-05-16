@@ -1,3 +1,3 @@
 This repository revolves around SQL (Structured Query Language) and how to use it to exploit databases vulnerable to SQL Injection.  This write up is traditionally different from my previous write ups as I have used my write up to document my notes and have how I have pwned the room.  
 
-Overall, this room was enjoyable yet challenging as traditionally I have only been exposed to SQL injection when bypassing authentication forms - completing this room has given me a deeper understanding of how SQL databases work, and how to use SQL injection.
+Overall, this room was enjoyable yet challenging as traditionally I have only been exposed to In-Band SQL injection when bypassing authentication forms - completing this room has given me a deeper understanding of how SQL databases work, and how to use SQL injection.
